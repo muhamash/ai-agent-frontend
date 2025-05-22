@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import SavedPrompts from './SavedPrompts';
 
 const Header: React.FC = () => {
@@ -12,8 +13,7 @@ const Header: React.FC = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 mr-2"></div>
-            <h1 className="text-xl font-bold gradient-text">AI Chat</h1>
+            <Link to={'/'} className="text-md font-bold gradient-text">Back to home</Link>
           </div>
         </div>
         
