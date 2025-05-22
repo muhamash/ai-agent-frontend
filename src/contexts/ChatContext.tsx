@@ -135,10 +135,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
   }
 }
 
-// Mock AI response function
+// AI response function
 const generateAIResponse = async (message: string): Promise<string> => {
   // In a real implementation, this would call an AI API
   // For now, we'll simulate a delay and return a canned response
+  console.log( 'Generating AI response for:', message );
   await new Promise(resolve => setTimeout(resolve, 1500));
   
   const responses = [
