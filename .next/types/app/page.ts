@@ -1,4 +1,4 @@
-// File: /Users/muhamash/Desktop/touch/code/private/ai-frontend/app/page.tsx
+// File: /Users/muhamash/Desktop/touch/code/private/ai-agent-frontend/app/page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

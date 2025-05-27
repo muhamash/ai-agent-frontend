@@ -1,12 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useChat } from "@/hooks/use-chat";
+import { Lightbulb, MessageSquare, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { ChatHistory } from "./chat-history";
 import { PromptLibrary } from "./prompt-library";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, MessageSquare, Lightbulb } from "lucide-react";
-import { useChat } from "@/hooks/use-chat";
 
 interface SidebarProps {
   onCloseSidebar?: () => void;
@@ -41,7 +41,7 @@ export function Sidebar({ onCloseSidebar }: SidebarProps) {
         defaultValue="chats"
         value={activeTab}
         onValueChange={setActiveTab}
-        className="flex-1"
+        className="flex-1 p-2 overflow-y-scroll scrollbar-none"
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="chats" className="flex items-center gap-2">
@@ -53,10 +53,10 @@ export function Sidebar({ onCloseSidebar }: SidebarProps) {
             <span>Prompts</span>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="chats" className="flex-1 overflow-y-auto pt-4">
+        <TabsContent value="chats" className="flex-1 pt-4">
           <ChatHistory onSelectChat={onCloseSidebar} />
         </TabsContent>
-        <TabsContent value="prompts" className="flex-1 overflow-y-auto pt-4">
+        <TabsContent value="prompts" className="flex-1 pt-4">
           <PromptLibrary onSelectPrompt={onCloseSidebar} />
         </TabsContent>
       </Tabs>

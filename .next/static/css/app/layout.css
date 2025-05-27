@@ -827,9 +827,6 @@ video {
 .block {
   display: block;
 }
-.inline-block {
-  display: inline-block;
-}
 .flex {
   display: flex;
 }
@@ -1250,6 +1247,9 @@ video {
 .overflow-x-hidden {
   overflow-x: hidden;
 }
+.overflow-y-scroll {
+  overflow-y: scroll;
+}
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1400,6 +1400,13 @@ video {
 }
 .bg-transparent {
   background-color: transparent;
+}
+.bg-red-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 38 38 / var(--tw-bg-opacity));
+}
+.bg-opacity-0 {
+  --tw-bg-opacity: 0;
 }
 .fill-current {
   fill: currentColor;
@@ -1783,6 +1790,16 @@ video {
 .\[animation-delay\:-0\.3s\] {
   animation-delay: -0.3s;
 }
+
+/* Hide scrollbar for all browsers */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
 
 :root {
   --foreground-rgb: 0, 0, 0;

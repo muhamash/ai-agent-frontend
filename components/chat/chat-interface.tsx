@@ -1,11 +1,11 @@
 "use client";
 
-import { useChat } from "@/hooks/use-chat";
-import { MessageList } from "./message-list";
-import { MessageInput } from "./message-input";
-import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useChat } from "@/hooks/use-chat";
 import { Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MessageInput } from "./message-input";
+import { MessageList } from "./message-list";
 
 export function ChatInterface() {
   const { currentChat, sendPrompt, isAiThinking } = useChat();
@@ -61,7 +61,7 @@ export function ChatInterface() {
   );
 
   return (
-    <div className="flex flex-col h-full pt-16 md:pt-0">
+    <div className="flex flex-col max-h-screen pt-16 md:pt-0">
       <div 
         ref={containerRef}
         className="flex-1 overflow-y-auto px-4 py-4 md:py-6"
