@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Message } from "@/types/chat";
 import { Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 interface AiMessageProps {
@@ -16,7 +16,20 @@ interface AiMessageProps {
 
 export function AiMessage({ message }: AiMessageProps) {
   const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
+  const [ copied, setCopied ] = useState( false );
+  const speed = 10;
+  const [displayedText, setDisplayedText] = useState("");
+  
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setDisplayedText((prev) => prev + message.content.charAt(index));
+      index++;
+      if (index >= message.content.length) clearInterval(interval);
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [message.content, speed]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(message.content);
@@ -82,7 +95,7 @@ export function AiMessage({ message }: AiMessageProps) {
         <Card className="border-none">
           <CardContent className="p-3 text-sm prose prose-sm dark:prose-invert max-w-none">
             <div className="whitespace-pre-wrap markdown-content">
-              <ReactMarkdown>{message.content}</ReactMarkdown>
+              <ReactMarkdown>{displayedText}</ReactMarkdown>
             </div>
           </CardContent>
         </Card>
