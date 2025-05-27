@@ -1,4 +1,4 @@
-export type MessageRole = "user" | "assistant";
+export type MessageRole = string;
 
 export interface Message {
   id: string;
