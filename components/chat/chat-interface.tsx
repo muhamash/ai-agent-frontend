@@ -61,7 +61,7 @@ export function ChatInterface() {
   );
 
   return (
-    <div className="flex flex-col max-h-screen pt-16 md:pt-0">
+    <div className="flex flex-col h-screen pt-16 md:pt-0">
       <div 
         ref={containerRef}
         className="flex-1 overflow-y-auto px-4 py-4 md:py-6"
