@@ -7,6 +7,7 @@ import { Lightbulb, MessageSquare, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { ChatHistory } from "./chat-history";
 import { PromptLibrary } from "./prompt-library";
+import Link from "next/link";
 
 interface SidebarProps {
   onCloseSidebar?: () => void;
@@ -26,7 +27,7 @@ export function Sidebar({ onCloseSidebar }: SidebarProps) {
   return (
     <aside className="flex h-full w-full flex-col bg-card p-4">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">AI Assistant</h1>
+        <Link href={'/'} className="text-xl font-bold">Back to Home</Link>
       </div>
 
       <Button 
