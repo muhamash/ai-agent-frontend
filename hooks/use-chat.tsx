@@ -16,42 +16,6 @@ interface ChatState {
   deleteChat: (chatId: string) => void;
 }
 
-// Call real AI API instead of simulating
-const getAiResponse = async (
-  sessionId: string,
-  prompt: string
-): Promise<string> => {
-  console.log("Calling AI API for prompt:", prompt, "sessionId:", sessionId);
-
-  const response = await fetch(
-    "https://go-ai-agent-muhamash4111-ukwf1enb.leapcell.dev/ai-agent",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        session_id: sessionId,
-        prompt,
-        stream: false,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-
-  console.log("AI API response:", data);
-  // Extract assistant content from the API response structure
-  const aiMessage =
-    data.choices?.[0]?.message?.content ||
-    "Sorry, no response from AI at the moment.";
-
-  return aiMessage;
-};
 
 export const useChat = create<ChatState>()(
   persist(
@@ -82,13 +46,12 @@ export const useChat = create<ChatState>()(
       sendPrompt: async ( content: string ) =>
       {
         let chatId = get().currentChatId;
-
-        // If no current chat, create a new one
+      
         if ( !chatId )
         {
           chatId = get().startNewChat();
         }
-
+      
         // Create user message
         const userMessage: Message = {
           id: uuidv4(),
@@ -96,8 +59,8 @@ export const useChat = create<ChatState>()(
           role: "user",
           timestamp: Date.now(),
         };
-
-        // Update state with user message
+      
+        // Add user message to chat
         set( ( state ) =>
         {
           const updatedChatHistory = state.chatHistory.map( ( chat ) =>
@@ -112,60 +75,123 @@ export const useChat = create<ChatState>()(
             }
             return chat;
           } );
-
-          const currentChat = updatedChatHistory.find(
-            ( chat ) => chat.id === chatId
-          ) || null;
-
+      
+          const currentChat = updatedChatHistory.find( ( chat ) => chat.id === chatId ) || null;
+      
           return {
             chatHistory: updatedChatHistory,
             currentChat,
             isAiThinking: true,
           };
         } );
-
+      
+        // Prepare to add assistant message and stream content
+        const assistantMessageId = uuidv4();
+      
+        // Add empty assistant message first
+        set( ( state ) =>
+        {
+          const updatedChatHistory = state.chatHistory.map( ( chat ) =>
+          {
+            if ( chat.id === chatId )
+            {
+              return {
+                ...chat,
+                messages: [
+                  ...chat.messages,
+                  {
+                    id: assistantMessageId,
+                    content: "",
+                    role: "assistant",
+                    timestamp: Date.now(),
+                  },
+                ],
+                timestamp: Date.now(),
+              };
+            }
+            return chat;
+          } );
+      
+          const currentChat = updatedChatHistory.find( ( chat ) => chat.id === chatId ) || null;
+      
+          return {
+            chatHistory: updatedChatHistory,
+            currentChat,
+          };
+        } );
+      
         try
         {
-          // Get AI response from real API using currentChatId as session_id
-          const aiResponseContent = await getAiResponse( chatId, content );
-
-          // Create AI message
-          const aiMessage: Message = {
-            id: uuidv4(),
-            content: aiResponseContent,
-            role: "assistant",
-            timestamp: Date.now(),
-          };
-
-          // Update state with AI message
-          set( ( state ) =>
-          {
-            const updatedChatHistory = state.chatHistory.map( ( chat ) =>
-            {
-              if ( chat.id === chatId )
-              {
-                return {
-                  ...chat,
-                  messages: [ ...chat.messages, aiMessage ],
-                  timestamp: Date.now(),
-                };
-              }
-              return chat;
-            } );
-
-            const currentChat = updatedChatHistory.find(
-              ( chat ) => chat.id === chatId
-            ) || null;
-
-            return {
-              chatHistory: updatedChatHistory,
-              currentChat,
-              isAiThinking: false,
-            };
+          // Call your streaming API endpoint
+          const response = await fetch( "https://go-ai-agent-muhamash4111-ukwf1enb.leapcell.dev/ai-agent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify( {
+              session_id: chatId,
+              prompt: content,
+              stream: true,
+            } ),
           } );
+      
+          if ( !response.body )
+          {
+            throw new Error( "ReadableStream not supported in this environment" );
+          }
+      
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder( "utf-8" );
+          console.log( "Streaming AI response started for chatId:", chatId, reader, decoder );
+          let done = false;
+          let assistantContent = "";
+      
+          while ( !done )
+          {
+            const { value, done: doneReading } = await reader.read();
+            done = doneReading;
+      
+            if ( value )
+            {
+              const chunk = decoder.decode( value, { stream: true } );
+              assistantContent += chunk;
+            
+              // Optionally clean up trailing spaces/newlines for better UX
+              const cleanedContent = assistantContent.trimEnd();
+            
+              set( ( state ) =>
+              {
+                const updatedChatHistory = state.chatHistory.map( ( chat ) =>
+                {
+                  if ( chat.id === chatId )
+                  {
+                    return {
+                      ...chat,
+                      messages: chat.messages.map( ( msg ) =>
+                        msg.id === assistantMessageId
+                          ? { ...msg, content: cleanedContent, timestamp: Date.now() }
+                          : msg
+                      ),
+                      timestamp: Date.now(),
+                    };
+                  }
+                  return chat;
+                } );
+            
+                const currentChat = updatedChatHistory.find( ( chat ) => chat.id === chatId ) || null;
+            
+                return {
+                  chatHistory: updatedChatHistory,
+                  currentChat,
+                };
+              } );
+            }
+            
+          }
+      
+          // Streaming done, set AI thinking false
+          set( { isAiThinking: false } );
         } catch ( error )
         {
-          console.error( "Error getting AI response:", error );
+          console.error( "Error streaming AI response:", error );
           set( { isAiThinking: false } );
         }
       },

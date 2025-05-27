@@ -827,6 +827,9 @@ video {
 .block {
   display: block;
 }
+.inline-block {
+  display: inline-block;
+}
 .flex {
   display: flex;
 }
@@ -1794,6 +1797,16 @@ video {
     --background-end-rgb: 0, 0, 0;
   }
 }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blinking-cursor {
+  animation: blink 1s step-start infinite;
+}
+
 
 .glass-morphism {
   background: rgba(255, 255, 255, 0.05);

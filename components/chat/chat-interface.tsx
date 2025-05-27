@@ -18,11 +18,13 @@ export function ChatInterface() {
   };
 
   // Scroll to bottom when messages change
-  useEffect(() => {
-    if (containerRef.current) {
+  useEffect( () =>
+  {
+    if ( containerRef.current )
+    {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [currentChat?.messages]);
+  }, [ currentChat?.messages.map( m => m.content ).join( "" ) ] );
 
   const examplePrompts = [
     "Write a blog post about the future of AI",
